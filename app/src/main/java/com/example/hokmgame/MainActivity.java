@@ -15,6 +15,7 @@ import androidx.core.view.OnApplyWindowInsetsListener;
 public class MainActivity extends AppCompatActivity {
     private Button settingsBtn;
     private Button shareBtn; // Declare the share button
+    private Button playBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+        playBtn=findViewById(R.id.playButton);
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, GameActivity.class);
+                startActivity(i);
+            }
         });
     }
 
