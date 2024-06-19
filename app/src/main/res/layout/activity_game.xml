@@ -54,4 +54,61 @@
         app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview"
         app:layout_constraintVertical_bias="0.0" />
 
+    <ImageView
+        android:id="@+id/card1"
+        android:layout_width="105dp"
+        android:layout_height="152dp"
+        android:layout_marginStart="84dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.397"
+        tools:srcCompat="@drawable/posht" />
+
+    <ImageView
+        android:id="@+id/card2"
+        android:layout_width="105dp"
+        android:layout_height="152dp"
+        android:layout_marginTop="120dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/posht" />
+
+    <ImageView
+        android:id="@+id/card3"
+        android:layout_width="105dp"
+        android:layout_height="152dp"
+        android:layout_marginBottom="256dp"
+        app:layout_constraintBottom_toBottomOf="@+id/player1_hand_recyclerview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card2"
+        app:layout_constraintVertical_bias="1.0"
+        tools:srcCompat="@drawable/posht" />
+
+    <ImageView
+        android:id="@+id/card4"
+        android:layout_width="105dp"
+        android:layout_height="152dp"
+        android:layout_marginEnd="84dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.818"
+        app:layout_constraintStart_toEndOf="@+id/card1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.397"
+        tools:srcCompat="@drawable/posht" />
+
+    <FrameLayout
+        android:id="@+id/trump_caller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="260dp"
+        tools:layout_editor_absoluteY="68dp">
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

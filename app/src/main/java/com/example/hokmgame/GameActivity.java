@@ -1,32 +1,52 @@
 package com.example.hokmgame;
 
 import android.os.Bundle;
+import android.widget.ImageView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCardDistributionCompleteListener {
 
     private RecyclerView recyclerViewPlayer1;
     private RecyclerView recyclerViewPlayer2;
     private RecyclerView recyclerViewPlayer3;
     private RecyclerView recyclerViewPlayer4;
     private CardAdapter cardAdapterPlayer1;
-    private CardAdapter cardAdapterPlayer2;
-    private CardAdapter cardAdapterPlayer3;
-    private CardAdapter cardAdapterPlayer4;
+    private CardAdapterOpVertical cardAdapterPlayer2;
+    private CardAdapterOpHorizontal cardAdapterPlayer3;
+    private CardAdapterOpVertical cardAdapterPlayer4;
 
     private DynamicHorizontalOverlappingDecoration horizontalDecoration;
     private DynamicHorizontalOverlappingDecoration horizontalDecoration2;
     private DynamicVerticalOverlappingDecoration verticalDecoration;
     private DynamicVerticalOverlappingDecoration verticalDecoration2;
 
+    private ImageView card1, card2, card3, card4;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        card1 = findViewById(R.id.card1);
+        card2 = findViewById(R.id.card2);
+        card3 = findViewById(R.id.card3);
+        card4 = findViewById(R.id.card4);
+//        card1.setImageResource(R.drawable.ca);
+//        card2.setImageResource(R.drawable.da);
+//        card3.setImageResource(R.drawable.sa);
+//        card4.setImageResource(R.drawable.ha);
 
         // Initialize RecyclerViews
         recyclerViewPlayer1 = findViewById(R.id.player1_hand_recyclerview);
@@ -46,34 +66,63 @@ public class GameActivity extends AppCompatActivity {
         List<String> cardListPlayer3 = new ArrayList<>();
         List<String> cardListPlayer4 = new ArrayList<>();
 
+        String[] suits = {"h", "d", "c", "s"};
+        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"};
+
+// Populate the card lists with the standard deck of cards
+        List<String> deck = new ArrayList<>();
+        for (String suit : suits) {
+            for (String rank : ranks) {
+                String card = suit+rank;
+                deck.add(card);
+            }
+        }
+
+        Collections.shuffle(deck);
+//TODO:make the card distro after trump caller appoinment
+//        int numCardsPerPlayer = 13;
+//        for (int i = 0; i < numCardsPerPlayer; i++) {
+//            String card = deck.remove(0);
+//            cardListPlayer1.add(card);
+//        }
+//        for (int i = 0; i < numCardsPerPlayer; i++) {
+//            String card = deck.remove(0);
+//            cardListPlayer2.add(card);
+//        }
+//        for (int i = 0; i < numCardsPerPlayer; i++) {
+//            String card = deck.remove(0);
+//            cardListPlayer3.add(card);
+//        }
+//        for (int i = 0; i < numCardsPerPlayer; i++) {
+//            String card = deck.remove(0);
+//            cardListPlayer4.add(card);
+//        }
+
         // Add cards to the lists (example)
-        cardListPlayer1.add("h8");
-        cardListPlayer1.add("s2");
-//        for (int j = 0; j < 15; j++) {
-            cardListPlayer1.add("ca");
-//        }
-//        for (int j = 0; j < 15; j++) {
-            cardListPlayer3.add("back");
-//        }
-
-        cardListPlayer2.add("back_op");
-        cardListPlayer2.add("back_op");
-        cardListPlayer2.add("back_op");
-        cardListPlayer2.add("back_op");
-        cardListPlayer2.add("back_op");
-        cardListPlayer2.add("back_op");
-
-        cardListPlayer3.add("back");
-        cardListPlayer3.add("back");
-
-        cardListPlayer4.add("back_op");
-        cardListPlayer4.add("back_op");
+//        cardListPlayer1.add("h8");
+//        cardListPlayer1.add("s2");
+//        cardListPlayer1.add("ca");
+//
+//        cardListPlayer3.add("back");
+//
+//        cardListPlayer2.add("back_op");
+//        cardListPlayer2.add("back_op");
+//        cardListPlayer2.add("back_op");
+//        cardListPlayer2.add("back_op");
+//        cardListPlayer2.add("back_op");
+//        cardListPlayer2.add("back_op");
+//
+//        cardListPlayer3.add("back");
+//        cardListPlayer3.add("back");
+//
+//        cardListPlayer4.add("back_op");
+//        cardListPlayer4.add("back_op");
 
         // Initialize CardAdapters for each player
         cardAdapterPlayer1 = new CardAdapter(this, cardListPlayer1);
-        cardAdapterPlayer2 = new CardAdapter(this, cardListPlayer2);
-        cardAdapterPlayer3 = new CardAdapter(this, cardListPlayer3);
-        cardAdapterPlayer4 = new CardAdapter(this, cardListPlayer4);
+        cardAdapterPlayer2 = new CardAdapterOpVertical(this, cardListPlayer2);
+        cardAdapterPlayer3 = new CardAdapterOpHorizontal(this, cardListPlayer3);
+        cardAdapterPlayer4 = new CardAdapterOpVertical(this, cardListPlayer4);
 
         // Set Adapters to RecyclerViews
         recyclerViewPlayer1.setAdapter(cardAdapterPlayer1);
@@ -96,13 +145,16 @@ public class GameActivity extends AppCompatActivity {
 
         // Calculate and set overlaps
         calculateAndSetOverlaps();
+
+        if (savedInstanceState == null) {
+            addFragment(new TrumpCaller());
+        }
     }
 
     private void calculateAndSetOverlaps() {
         calculateHorizontalOverlap(recyclerViewPlayer1, cardAdapterPlayer1, horizontalDecoration);
         horizontalDecoration.setOverlapWidth(200);
         calculateVerticalOverlap(recyclerViewPlayer2, cardAdapterPlayer2, verticalDecoration);
-//        calculateHorizontalOverlap(recyclerViewPlayer3, cardAdapterPlayer3, horizontalDecoration2);
         horizontalDecoration2.setOverlapWidth(150);
         calculateVerticalOverlap(recyclerViewPlayer4, cardAdapterPlayer4, verticalDecoration2);
     }
@@ -118,14 +170,23 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void calculateVerticalOverlap(RecyclerView recyclerView, CardAdapter adapter, DynamicVerticalOverlappingDecoration decoration) {
-//        int itemCount = adapter.getItemCount();
-//        if (itemCount > 1) {
-//            int totalHeight = 100;
-//            int cardHeight = 150; // Example height
-//            int overlapHeight = (totalHeight - cardHeight) / (itemCount-1 );
+    private void calculateVerticalOverlap(RecyclerView recyclerView, CardAdapterOpVertical adapter, DynamicVerticalOverlappingDecoration decoration) {
             decoration.setOverlapHeight(150);
             recyclerView.invalidateItemDecorations();
-//        }
+    }
+    private void addFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.trump_caller, fragment);
+        fragmentTransaction.commit();
+    }
+    @Override
+    public void onCardDistributionComplete() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment trumpCallerFragment = fragmentManager.findFragmentById(R.id.trump_caller);
+        if (trumpCallerFragment != null) {
+            fragmentTransaction.remove(trumpCallerFragment).commit();
+        }
     }
 }
