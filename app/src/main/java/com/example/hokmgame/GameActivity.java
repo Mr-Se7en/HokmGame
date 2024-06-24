@@ -2,12 +2,15 @@ package com.example.hokmgame;
 
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import androidx.fragment.app.Fragment;
@@ -29,8 +32,17 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     private DynamicHorizontalOverlappingDecoration horizontalDecoration2;
     private DynamicVerticalOverlappingDecoration verticalDecoration;
     private DynamicVerticalOverlappingDecoration verticalDecoration2;
-
     private ImageView card1, card2, card3, card4;
+    public static List<String> deck = new ArrayList<>();
+    public List<String> cardListPlayer1 = new ArrayList<>();
+    public List<String> cardListPlayer2 = new ArrayList<>();
+    public List<String> cardListPlayer3 = new ArrayList<>();
+    public List<String> cardListPlayer4 = new ArrayList<>();
+
+    private static final List<String> SUIT_ORDER = Arrays.asList("h", "d", "c", "s");
+    private static final List<String> RANK_ORDER = Arrays.asList("2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a");
+    public TextView trumpText;
+
 
 
 
@@ -38,15 +50,13 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        trumpText=findViewById(R.id.trumpText);
 
         card1 = findViewById(R.id.card1);
         card2 = findViewById(R.id.card2);
         card3 = findViewById(R.id.card3);
         card4 = findViewById(R.id.card4);
-//        card1.setImageResource(R.drawable.ca);
-//        card2.setImageResource(R.drawable.da);
-//        card3.setImageResource(R.drawable.sa);
-//        card4.setImageResource(R.drawable.ha);
+
 
         // Initialize RecyclerViews
         recyclerViewPlayer1 = findViewById(R.id.player1_hand_recyclerview);
@@ -61,16 +71,12 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         recyclerViewPlayer4.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         // Initialize Card Lists for each player
-        List<String> cardListPlayer1 = new ArrayList<>();
-        List<String> cardListPlayer2 = new ArrayList<>();
-        List<String> cardListPlayer3 = new ArrayList<>();
-        List<String> cardListPlayer4 = new ArrayList<>();
+
 
         String[] suits = {"h", "d", "c", "s"};
         String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"};
 
 // Populate the card lists with the standard deck of cards
-        List<String> deck = new ArrayList<>();
         for (String suit : suits) {
             for (String rank : ranks) {
                 String card = suit+rank;
@@ -79,7 +85,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         }
 
         Collections.shuffle(deck);
-//TODO:make the card distro after trump caller appoinment
+//TODO:make the card distro after trump caller appointment
 //        int numCardsPerPlayer = 13;
 //        for (int i = 0; i < numCardsPerPlayer; i++) {
 //            String card = deck.remove(0);
@@ -181,6 +187,28 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         fragmentTransaction.commit();
     }
     @Override
+    public void onCardDistributed(String card, int playerIndex) {
+        addCard(card, playerIndex);
+        // Update the RecyclerView adapter for the corresponding player
+        switch (playerIndex) {
+            case 0:
+                cardAdapterPlayer1.notifyDataSetChanged();
+                break;
+            case 1:
+                cardAdapterPlayer2.notifyDataSetChanged();
+                break;
+            case 2:
+                cardAdapterPlayer3.notifyDataSetChanged();
+                break;
+            case 3:
+                cardAdapterPlayer4.notifyDataSetChanged();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onCardDistributionComplete() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -189,4 +217,59 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
             fragmentTransaction.remove(trumpCallerFragment).commit();
         }
     }
+
+    public void addCard(String card, int p) {
+        switch (p) {
+            case 0:
+                cardListPlayer1.add(card);
+                cardListPlayer1.sort((card1, card2) -> {
+                    // Extract suits and ranks
+                    String suit1 = card1.substring(0, 1);
+                    String suit2 = card2.substring(0, 1);
+                    String rank1 = card1.substring(1);
+                    String rank2 = card2.substring(1);
+
+                    // Compare suits
+                    int suitComparison = Integer.compare(SUIT_ORDER.indexOf(suit1), SUIT_ORDER.indexOf(suit2));
+                    if (suitComparison != 0) {
+                        return suitComparison;
+                    }
+
+                    // If suits are the same, compare ranks
+                    return Integer.compare(RANK_ORDER.indexOf(rank1), RANK_ORDER.indexOf(rank2));
+                });
+                break;
+            case 1:
+                cardListPlayer2.add(card);
+                break;
+            case 2:
+                cardListPlayer3.add(card);
+                break;
+            case 3:
+                cardListPlayer4.add(card);
+                break;
+            default:
+                break;
+        }
+    }
+    public void onBidComplete(int tr){
+        switch (tr){
+            case 1:
+                trumpText.setText("Trump:Hearts");
+                break;
+            case 2:
+                trumpText.setText("Trump:Diamonds");
+                break;
+            case 3:
+                trumpText.setText("Trump:Clubs");
+                break;
+            case 4:
+                trumpText.setText("Trump:Spades");
+                break;
+            default:
+                trumpText.setText("Broken");
+                break;
+        }
+    }
 }
+
