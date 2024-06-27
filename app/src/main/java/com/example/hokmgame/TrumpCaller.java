@@ -29,6 +29,7 @@ public class TrumpCaller extends Fragment {
         void onCardDistributionComplete();
         void onCardDistributed(String card, int playerIndex);
         void onBidComplete(int tr);
+        void onTrumpApp(int tr);
     }
     public class playercounter{
         //H D C S
@@ -247,6 +248,8 @@ public class TrumpCaller extends Fragment {
                     distributeCardsSequentially(players, (playerIndex + 1) % players.length);
                 } else {
                     trump = (playerIndex+1)%4;
+                    if(trump==0) trump=4;
+                    listener.onTrumpApp(trump);
                     // Add a delay before starting card distribution
                     handler.postDelayed(() -> startDistributionFromTrumpPlayer(players), 3000); // 3 seconds delay
                 }
@@ -326,9 +329,6 @@ public class TrumpCaller extends Fragment {
                 .setItems(new CharSequence[]{"Hearts", "Diamonds", "Clubs", "Spades"}, (dialog, which) -> {
 
                     switch (which) {
-                        case 0:
-                            selectedSuit = "h";
-                            break;
                         case 1:
                             selectedSuit = "d";
                             break;
@@ -339,6 +339,7 @@ public class TrumpCaller extends Fragment {
                             selectedSuit = "s";
                             break;
                         default:
+                            selectedSuit = "h";
                             break;
                     }
                     // Do something with the selected suit

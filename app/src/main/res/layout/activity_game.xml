@@ -55,7 +55,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/card1"
+        android:id="@+id/card2"
         android:layout_width="105dp"
         android:layout_height="152dp"
         android:layout_marginStart="100dp"
@@ -66,7 +66,7 @@
         tools:srcCompat="@drawable/posht" />
 
     <ImageView
-        android:id="@+id/card2"
+        android:id="@+id/card3"
         android:layout_width="105dp"
         android:layout_height="152dp"
         android:layout_marginTop="172dp"
@@ -76,7 +76,7 @@
         tools:srcCompat="@drawable/posht" />
 
     <ImageView
-        android:id="@+id/card3"
+        android:id="@+id/card1"
         android:layout_width="105dp"
         android:layout_height="152dp"
         android:layout_marginBottom="236dp"
@@ -93,42 +93,45 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/card1"
+        app:layout_constraintStart_toEndOf="@+id/card2"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.471"
         tools:srcCompat="@drawable/posht" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/player_txt4"
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:rotation="-90"
         android:text="player4"
         android:textAlignment="center"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/player_txt2"
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:rotation="90"
         android:text="player2"
         android:textAlignment="center"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/player_txt3"
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:layout_marginTop="28dp"
         android:text="player3"
         android:textAlignment="center"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
