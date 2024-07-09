@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 
-public class CardAdapterOpVertical extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
+public class CardAdapterOpVertical extends RecyclerView.Adapter<CardAdapterOpVertical.CardViewHolder> {
 
     private final Context context;
     private final List<String> cardList;
@@ -24,19 +24,28 @@ public class CardAdapterOpVertical extends RecyclerView.Adapter<CardAdapter.Card
 
     @NonNull
     @Override
-    public CardAdapter.CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item_vertical, parent, false);
-        return new CardAdapter.CardViewHolder(view);
+        return new CardViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CardAdapter.CardViewHolder holder, int position) {
-            holder.cardImage.setImageResource(R.drawable.posht_r);
+    public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
+        holder.cardImage.setImageResource(R.drawable.posht_r);
     }
 
     @Override
     public int getItemCount() {
         return cardList.size();
+    }
+
+    public void removeCard(String card) {
+        int position = cardList.indexOf(card);
+        if (position >= 0) {
+            cardList.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, cardList.size());
+        }
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {
@@ -48,3 +57,4 @@ public class CardAdapterOpVertical extends RecyclerView.Adapter<CardAdapter.Card
         }
     }
 }
+

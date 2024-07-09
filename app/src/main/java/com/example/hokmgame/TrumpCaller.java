@@ -127,6 +127,10 @@ public class TrumpCaller extends Fragment {
     private Handler handler;
     public static String selectedSuit;
 
+    TrumpCaller(int t){
+        trump=t;
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -170,9 +174,14 @@ public class TrumpCaller extends Fragment {
         }
 
         Collections.shuffle(deck);
-
         // Start animations as soon as the view is created
-        centerDeck.setOnClickListener(v -> animateCardDistribution(player1, player2, player3, player4));
+        if(trump<=0)
+            centerDeck.setOnClickListener(v -> animateCardDistribution(player1, player2, player3, player4));
+        else{
+            listener.onTrumpApp(trump);
+            handler.postDelayed(() -> startDistributionFromTrumpPlayer(new ImageView[]{player1, player2, player3, player4}), 3000);
+        }
+
     }
 
     private void bidder(playercounter playerc2,playercounter playerc3,playercounter playerc4,int index){

@@ -1,10 +1,15 @@
 package com.example.hokmgame;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,41 +31,66 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     private CardAdapterOpVertical cardAdapterPlayer2;
     private CardAdapterOpHorizontal cardAdapterPlayer3;
     private CardAdapterOpVertical cardAdapterPlayer4;
-
     private DynamicHorizontalOverlappingDecoration horizontalDecoration;
     private DynamicHorizontalOverlappingDecoration horizontalDecoration2;
     private DynamicVerticalOverlappingDecoration verticalDecoration;
     private DynamicVerticalOverlappingDecoration verticalDecoration2;
     private ImageView card1, card2, card3, card4;
-    private int trump;
-    private String trumpSuit;
+    private int trump=-1;
+    private String trumpSuit=null;
     public static List<String> deck = new ArrayList<>();
     public List<String> cardListPlayer1 = new ArrayList<>();
     public List<String> cardListPlayer2 = new ArrayList<>();
     public List<String> cardListPlayer3 = new ArrayList<>();
     public List<String> cardListPlayer4 = new ArrayList<>();
     CardManager cardmanager;
-
     private static final List<String> SUIT_ORDER = Arrays.asList("h", "s", "d", "c");
     private static final List<String> RANK_ORDER = Arrays.asList("a", "k", "q", "j", "10", "9", "8", "7", "6", "5", "4", "3", "2");
-//    ("a", "k", "q", "j", "10", "9", "8", "7", "6", "5", "4", "3", "2");
     public TextView trumpText;
     public TextView player2Txt,player3Txt,player4Txt;
+    public TextView pointsTxt1,pointsTxt2;
+    private int round = 1;
+    private int currentOrder = 1;
+    private int currentPlayer = 1;
+    private int group1Points = 0;
+    private int group2Points = 0;
+    private int group1 = 0;
+    private int group2 = 0;
 
     class CardManager{
-        private String suit;
-        private int Winning;
-        private  ImageView[] cardRes ={card1,card2,card3,card4};
+        private String suit=null;
+        private int Winning=0;
         private  String[] cards=new String[5] ;
         public String getSuit() {
             return suit;
         }
+        public void setSuit(String s){suit=s;}
+        public void setWinning(int w){Winning=w;}
         public int getWinning() {
             return Winning;
         }
         public String getCards(int num){
             return cards[num];
         }
+
+        public void setCards(String card , int p) {
+            this.cards[p] = card;
+        }
+        public void updateWinning(int player){
+            if(Winning==0) {
+                Winning=player;
+                return;
+            }
+            if(cards[this.Winning].substring(0,1).equals(cards[player].substring(0,1))){
+                if((RANK_ORDER.indexOf(cards[this.Winning].substring(1)))>(RANK_ORDER.indexOf(cards[player].substring(1)))){
+                    Winning=player;
+                }
+            }
+            else if (cards[player].substring(0,1).equals(trumpSuit)){
+                Winning=player;
+            }
+        }
+
     }
 
 
@@ -81,8 +111,12 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         player3Txt = findViewById(R.id.player_txt3);
         player4Txt = findViewById(R.id.player_txt4);
 
+        pointsTxt1 = findViewById(R.id.user_points);
+        pointsTxt2 = findViewById(R.id.opponent_points);
+
         // Initialize RecyclerViews
         recyclerViewPlayer1 = findViewById(R.id.player1_hand_recyclerview);
+        recyclerViewPlayer1.setEnabled(false);
         recyclerViewPlayer2 = findViewById(R.id.player2_hand_recyclerview);
         recyclerViewPlayer3 = findViewById(R.id.player3_hand_recyclerview);
         recyclerViewPlayer4 = findViewById(R.id.player4_hand_recyclerview);
@@ -96,21 +130,26 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         // Initialize Card Lists for each player
 
 
-        String[] suits = {"h", "d", "c", "s"};
-        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"};
-
-// Populate the card lists with the standard deck of cards
-        for (String suit : suits) {
-            for (String rank : ranks) {
-                String card = suit+rank;
-                deck.add(card);
-            }
-        }
-
-        Collections.shuffle(deck);
+//        String[] suits = {"h", "d", "c", "s"};
+//        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"};
+//
+//// Populate the card lists with the standard deck of cards
+//        for (String suit : suits) {
+//            for (String rank : ranks) {
+//                String card = suit+rank;
+//                deck.add(card);
+//            }
+//        }
+//
+//        Collections.shuffle(deck);
 
         // Initialize CardAdapters for each player
-        cardAdapterPlayer1 = new CardAdapter(this, cardListPlayer1);
+        cardAdapterPlayer1 = new CardAdapter(cardListPlayer1, new CardAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                onItemClicked(position);
+            }
+        });
         cardAdapterPlayer2 = new CardAdapterOpVertical(this, cardListPlayer2);
         cardAdapterPlayer3 = new CardAdapterOpHorizontal(this, cardListPlayer3);
         cardAdapterPlayer4 = new CardAdapterOpVertical(this, cardListPlayer4);
@@ -137,11 +176,136 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         // Calculate and set overlaps
         calculateAndSetOverlaps();
 
-        if (savedInstanceState == null) {
-            addFragment(new TrumpCaller());
-        }
+
+        startGame();
     }
 
+    public String getTrumpSuit() {
+        return trumpSuit;
+    }
+
+    private void startGame(){
+        if(round >=7){
+            if(group2 ==7|| group1 ==7){
+                endGame();
+                return;
+            }
+        }
+            if(trump!=-1) trump=currentPlayer;
+            String[] suits = {"h", "d", "c", "s"};
+            String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"};
+
+// Populate the card lists with the standard deck of cards
+            for (String suit : suits) {
+                for (String rank : ranks) {
+                    String card = suit+rank;
+                    deck.add(card);
+                }
+            }
+
+            Collections.shuffle(deck);
+            addFragment(new TrumpCaller(trump));
+
+    }
+    private void startRound(){
+        if(currentOrder== 5){
+            endRound();
+            if(group2Points ==7|| group1Points ==7){
+                round++;
+                if (group1Points > group2Points) {
+                    group1++;
+                } else {
+                    group2++;
+                }
+                group1Points=0;
+                group2Points=0;
+                cardListPlayer1.clear();
+                cardListPlayer2.clear();
+                cardListPlayer3.clear();
+                cardListPlayer4.clear();
+                cardAdapterPlayer1.notifyDataSetChanged();
+                cardAdapterPlayer2.notifyDataSetChanged();
+                cardAdapterPlayer3.notifyDataSetChanged();
+                cardAdapterPlayer4.notifyDataSetChanged();
+                player4Txt.setText("player4");
+                player3Txt.setText("player3");
+                player2Txt.setText("player2");
+                pointsTxt1.setText("Our Points: "+group1Points);
+                pointsTxt2.setText("Our Points: "+group2Points);
+                //todo the between round msg
+                startGame();
+                return;
+            }
+        }
+        playTurn();
+    }
+    private void playTurn(){
+        if(currentPlayer==1){
+            recyclerViewPlayer1.setEnabled(true);
+            return;
+        }
+        else {
+           recyclerViewPlayer1.setEnabled(false);
+           String card=playCard(currentOrder,currentPlayer);
+           cardmanager.setCards(card,currentPlayer);
+           removeCardFromPlayer(currentPlayer,card);
+           int cardResId = getResources().getIdentifier(card, "drawable", getPackageName());
+           switch (currentPlayer) {
+               case 2:
+                   card2.setImageResource(cardResId);
+                   break;
+               case 3:
+                   card3.setImageResource(cardResId);
+                   break;
+               case 4:
+                   card4.setImageResource(cardResId);
+                   break;
+           }
+            if (currentOrder==1) {
+                cardmanager.setSuit(card.substring(0, 1));
+            }
+        }
+        cardmanager.updateWinning(currentPlayer);
+        currentPlayer=(currentPlayer+1)%4;
+        if(currentPlayer==0) currentPlayer=4;
+        currentOrder++;
+        startRound();
+    }
+    private void endRound(){
+        currentOrder=1;
+        int winner=cardmanager.getWinning();
+        currentPlayer=winner;
+        cardmanager.setWinning(0);
+        if(winner==1||winner==3){
+            group1Points++;
+            pointsTxt1.setText("Our Points: "+group1Points);
+        }
+        else{
+            group2Points++;
+            pointsTxt2.setText("Their Points: "+group2Points);
+        }
+        for (ImageView player : new ImageView[] {card1,card2,card3,card4}) {
+            player.setImageDrawable(null);
+        }
+        cardmanager.setSuit(null);
+    }
+    private void endGame(){
+        int dub=(group1 > group2)?1:2;
+        showDialogAndClose(group1, group2,dub);
+    }
+    private void showDialogAndClose(int group1,int group2,int winner) {
+        new AlertDialog.Builder(this)
+                .setMessage("and the winner is group"+winner+'\n'+"group 1: "+group1+'\n'+"group 2: "+group2)
+                .setPositiveButton("Quit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Close the activity
+                        finish();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
     private void calculateAndSetOverlaps() {
         calculateHorizontalOverlap(recyclerViewPlayer1, cardAdapterPlayer1, horizontalDecoration);
         horizontalDecoration.setOverlapWidth(200);
@@ -201,6 +365,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         if (trumpCallerFragment != null) {
             fragmentTransaction.remove(trumpCallerFragment).commit();
         }
+        startRound();
     }
 
     public void addCard(String card, int p) {
@@ -226,12 +391,60 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 break;
             case 1:
                 cardListPlayer2.add(card);
+                cardListPlayer2.sort((card1, card2) -> {
+                    // Extract suits and ranks
+                    String suit1 = card1.substring(0, 1);
+                    String suit2 = card2.substring(0, 1);
+                    String rank1 = card1.substring(1);
+                    String rank2 = card2.substring(1);
+
+                    // Compare suits
+                    int suitComparison = Integer.compare(SUIT_ORDER.indexOf(suit1), SUIT_ORDER.indexOf(suit2));
+                    if (suitComparison != 0) {
+                        return suitComparison;
+                    }
+
+                    // If suits are the same, compare ranks
+                    return Integer.compare(RANK_ORDER.indexOf(rank1), RANK_ORDER.indexOf(rank2));
+                });
                 break;
             case 2:
                 cardListPlayer3.add(card);
+                cardListPlayer3.sort((card1, card2) -> {
+                    // Extract suits and ranks
+                    String suit1 = card1.substring(0, 1);
+                    String suit2 = card2.substring(0, 1);
+                    String rank1 = card1.substring(1);
+                    String rank2 = card2.substring(1);
+
+                    // Compare suits
+                    int suitComparison = Integer.compare(SUIT_ORDER.indexOf(suit1), SUIT_ORDER.indexOf(suit2));
+                    if (suitComparison != 0) {
+                        return suitComparison;
+                    }
+
+                    // If suits are the same, compare ranks
+                    return Integer.compare(RANK_ORDER.indexOf(rank1), RANK_ORDER.indexOf(rank2));
+                });
                 break;
             case 3:
                 cardListPlayer4.add(card);
+                cardListPlayer4.sort((card1, card2) -> {
+                    // Extract suits and ranks
+                    String suit1 = card1.substring(0, 1);
+                    String suit2 = card2.substring(0, 1);
+                    String rank1 = card1.substring(1);
+                    String rank2 = card2.substring(1);
+
+                    // Compare suits
+                    int suitComparison = Integer.compare(SUIT_ORDER.indexOf(suit1), SUIT_ORDER.indexOf(suit2));
+                    if (suitComparison != 0) {
+                        return suitComparison;
+                    }
+
+                    // If suits are the same, compare ranks
+                    return Integer.compare(RANK_ORDER.indexOf(rank1), RANK_ORDER.indexOf(rank2));
+                });
                 break;
             default:
                 break;
@@ -262,6 +475,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     }
     public void onTrumpApp(int tr){
         trump =tr;
+        currentPlayer=tr;
         String text = "Trump: ";
         int duration = Toast.LENGTH_SHORT;
         Toast toast;
@@ -289,11 +503,9 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
     }
 
-
-
     public String LargestE(List<String> player){
         String max= player.get(0);
-        for(int i=1;i<13;i++){
+        for(int i=1;i<player.size();i++){
             if(player.get(i).substring(0, 1).equals(player.get(i - 1).substring(0, 1))){
                 if ((RANK_ORDER.indexOf(player.get(i).substring(1)) <RANK_ORDER.indexOf(max.substring(1)))){
                     max=player.get(i);
@@ -304,7 +516,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     }
     public String LargestSuit(List<String> player, String Suit){
         String ans="";
-        for(int i=0;i<13;i++){
+        for(int i=0;i<player.size();i++){
             if(player.get(i).substring(0, 1).equals(Suit)){
                 ans= player.get(i);
                 break;
@@ -314,19 +526,26 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     }
     public String LowestSuit(List<String> player, String Suit){
         String ans="";
-        for(int i=0;i<13;i++){
+        for(int i=0;i<player.size();i++){
             if(player.get(i).substring(0, 1).equals(Suit)){
-                if((i+1)<13&&player.get(i).substring(0, 1).equals(player.get(i+1).substring(0,1))){
+                if((i+1)<player.size()) {
+                    if (!(player.get(i).substring(0, 1).equals(player.get(i + 1).substring(0, 1)))) {
+                        ans = player.get(i);
+                        break;
+                    }
+                }
+                else{
                     ans = player.get(i);
                     break;
                 }
+
             }
         }
         return ans;
     }
     public String LowestE(List<String> player){
-        String min= player.get(12);
-        for(int i=12;i>=0;i--){
+        String min= player.get(player.size()-1);
+        for(int i=player.size()-1;i>=0;i--){
             if((i-1)>0&&!player.get(i).substring(0, 1).equals(player.get(i - 1).substring(0, 1))){
                 if ((RANK_ORDER.indexOf(player.get(i-1).substring(1)) >RANK_ORDER.indexOf(min.substring(1)))){
                     min=player.get(i);
@@ -346,14 +565,13 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         }
         return null;
     }
-    //TODO: make the pot(middle cards), add the functions to return the suit in the middle, and the value of the cards inside
     public String playCard(int place,int player){
         switch (place){
             case 1:
                 return LargestE(p2L(player));
             case 2:
-                if(isAval(cardmanager.getSuit(),p2L(player))){
-                    if((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))){
+                if(isAvailable(cardmanager.getSuit(),p2L(player))){
+                    if((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                         return LargestSuit(p2L(player),cardmanager.getSuit());
                     }
                     else {
@@ -361,7 +579,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                     }
                 }
                 else {
-                    if(isAval(trumpSuit ,p2L(player))){
+                    if(isAvailable(trumpSuit ,p2L(player))){
                         return LargestSuit(p2L(player),trumpSuit);
                     }
                     else {
@@ -369,11 +587,11 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                     }
                 }
             case 3:
-                if(isAval(cardmanager.getSuit(),p2L(player))){
-                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))){
+                if(isAvailable(cardmanager.getSuit(),p2L(player))){
+                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                         return LowestSuit(p2L(player),cardmanager.getSuit());
                     }
-                    else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))) {
+                    else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))) {
                         return LargestSuit(p2L(player),cardmanager.getSuit());
                     }
                     else {
@@ -382,8 +600,8 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
                 }
                 else {
-                    if(isAval(trumpSuit ,p2L(player))){
-                        if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))){
+                    if(isAvailable(trumpSuit ,p2L(player))){
+                        if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                             return LowestE(p2L(player));
                         }
                         else {
@@ -396,11 +614,11 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 }
 
             case 4:
-                if(isAval(cardmanager.getSuit(),p2L(player))){
-                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))){
+                if(isAvailable(cardmanager.getSuit(),p2L(player))){
+                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                         return LowestSuit(p2L(player),cardmanager.getSuit());
                     }
-                    else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getWinning()))) {
+                    else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))) {
                         return LargestSuit(p2L(player),cardmanager.getSuit());
                     }
                     else {
@@ -409,7 +627,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
                 }
                 else {
-                    if(isAval(trumpSuit ,p2L(player))){
+                    if(isAvailable(trumpSuit ,p2L(player))){
                         if(cardmanager.getCards(((player+2)%4)+1).substring(0,1).equals(trumpSuit)){
                             if(cardmanager.getCards(((player-1)%4)+1).substring(0,1).equals(trumpSuit)){
                                 return LowestE(p2L(player));
@@ -450,13 +668,104 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
         return null;
     }
-    public boolean isAval(String suit, List <String> player){
-        for (int i=0;i<13;i++){
+    public boolean isAvailable(String suit, List <String> player){
+        for (int i=0;i<player.size();i++){
             if(player.get(i).substring(0, 1).equals(suit)) {
                 return true;
             }
         }
          return false;
+    }
+    private void removeCardFromPlayer(int playerIndex, String card) {
+        switch (playerIndex) {
+            case 2:
+                cardListPlayer2.remove(card);
+                cardAdapterPlayer2.removeCard(card);
+                cardAdapterPlayer2.notifyDataSetChanged();
+                break;
+            case 3:
+                cardListPlayer3.remove(card);
+                cardAdapterPlayer3.removeCard(card);
+                cardAdapterPlayer3.notifyDataSetChanged();
+                break;
+            case 4:
+                cardListPlayer4.remove(card);
+                cardAdapterPlayer4.removeCard(card);
+                cardAdapterPlayer4.notifyDataSetChanged();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void onItemClicked(int position) {
+        String card=cardListPlayer1.get(position);
+        // Check conditions here before allowing the card to be played
+        if (canPlayCard(card)) {
+            // Remove the card and update RecyclerView
+            cardListPlayer1.remove(position);
+            cardAdapterPlayer1.notifyItemRemoved(position);
+            cardmanager.setCards(card,1);
+            if(cardmanager.getSuit()==null) {
+                cardmanager.setSuit(card.substring(0,1));
+            }
+            playCardWithAnimation(card, position);
+        } else {
+            // Show a message or handle the case where the card cannot be played
+            Toast.makeText(this, "You cannot play this card.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean canPlayCard(String card) {
+        if(isAvailable(cardmanager.getSuit(),cardListPlayer1)){
+            return card.substring(0, 1).equals(cardmanager.getSuit());
+        }
+        return true;
+    }
+
+    private void playCardWithAnimation(String card, int position) {
+        View cardView = recyclerViewPlayer1.getLayoutManager().findViewByPosition(position);
+        if (cardView == null) return;
+
+        // Calculate the start and end coordinates for the animation
+        int[] startLocation = new int[2];
+        cardView.getLocationOnScreen(startLocation);
+        int[] endLocation = new int[2];
+        card1.getLocationOnScreen(endLocation);
+
+        float startX = startLocation[0];
+        float startY = startLocation[1];
+        float endX = endLocation[0];
+        float endY = endLocation[1];
+
+        // Create the animation
+        TranslateAnimation animation = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+        animation.setDuration(1000);
+        animation.setFillAfter(true);
+
+        // Start the animation
+        cardView.startAnimation(animation);
+
+        // Update the card1 ImageView after the animation
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Update the card1 ImageView with the played card
+                int cardResId = getResources().getIdentifier(card, "drawable", getPackageName());
+                card1.setImageResource(cardResId);
+                cardmanager.updateWinning(currentPlayer);
+                currentPlayer=(currentPlayer+1)%4;
+                if(currentPlayer==0) currentPlayer=4;
+                currentOrder++;
+                startRound();
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
 
 }
