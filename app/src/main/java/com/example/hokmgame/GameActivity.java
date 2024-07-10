@@ -2,6 +2,8 @@ package com.example.hokmgame;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -23,10 +25,17 @@ import androidx.fragment.app.FragmentTransaction;
 
 public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCardDistributionCompleteListener {
 
+    private Handler handler;
     private RecyclerView recyclerViewPlayer1;
     private RecyclerView recyclerViewPlayer2;
     private RecyclerView recyclerViewPlayer3;
     private RecyclerView recyclerViewPlayer4;
+    private RecyclerView userPointHolder;
+    private RecyclerView oppPointHolder;
+    private PointHolderAdapter userPointAdapter;
+    private PointHolderAdapter oppPointAdapter;
+    private List<PointItem> userPointList;
+    private List<PointItem> oppPointList;
     private CardAdapter cardAdapterPlayer1;
     private CardAdapterOpVertical cardAdapterPlayer2;
     private CardAdapterOpHorizontal cardAdapterPlayer3;
@@ -60,7 +69,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     class CardManager{
         private String suit=null;
         private int Winning=0;
-        private  String[] cards=new String[5] ;
+        private final String[] cards=new String[5] ;
         public String getSuit() {
             return suit;
         }
@@ -96,9 +105,43 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        handler = new Handler(Looper.getMainLooper());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         trumpText=findViewById(R.id.trumpText);
+
+//        userPointHolder = findViewById(R.id.user_point_holder);
+//        userPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        oppPointHolder = findViewById(R.id.opponent_point_holder);
+//        oppPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//
+//        userPointList=new ArrayList<>();
+//        oppPointList=new ArrayList<>();
+//
+//        userPointList.add(new PointItem(1));
+//        userPointList.add(new PointItem(2));
+//        userPointList.add(new PointItem(3));
+//        userPointList.add(new PointItem(4));
+//        userPointList.add(new PointItem(5));
+//        userPointList.add(new PointItem(6));
+//        userPointList.add(new PointItem(7));
+//        userPointList.add(new PointItem(8));
+//
+//        oppPointList.add(new PointItem(1));
+//        oppPointList.add(new PointItem(2));
+//        oppPointList.add(new PointItem(3));
+//        oppPointList.add(new PointItem(4));
+//        oppPointList.add(new PointItem(5));
+//        oppPointList.add(new PointItem(6));
+//        oppPointList.add(new PointItem(7));
+//        oppPointList.add(new PointItem(8));
+//
+//        userPointAdapter = new PointHolderAdapter(userPointList,false);
+//        userPointHolder.setAdapter(userPointAdapter);
+//
+//        oppPointAdapter = new PointHolderAdapter(oppPointList,true);
+//        oppPointHolder.setAdapter(oppPointAdapter);
 
         cardmanager=new CardManager();
 
@@ -180,10 +223,6 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         startGame();
     }
 
-    public String getTrumpSuit() {
-        return trumpSuit;
-    }
-
     private void startGame(){
         if(round >=7){
             if(group2 ==7|| group1 ==7){
@@ -210,6 +249,8 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     private void startRound(){
         if(currentOrder== 5){
             endRound();
+//            handler.postDelayed(() ->endRound(), 500);
+
             if(group2Points ==7|| group1Points ==7){
                 round++;
                 if (group1Points > group2Points) {
@@ -227,67 +268,83 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 cardAdapterPlayer2.notifyDataSetChanged();
                 cardAdapterPlayer3.notifyDataSetChanged();
                 cardAdapterPlayer4.notifyDataSetChanged();
-                player4Txt.setText("player4");
-                player3Txt.setText("player3");
-                player2Txt.setText("player2");
-                pointsTxt1.setText("Our Points: "+group1Points);
-                pointsTxt2.setText("Our Points: "+group2Points);
+                player4Txt.setText(getString(R.string.player4));
+                player3Txt.setText(getString(R.string.player3));
+                player2Txt.setText(getString(R.string.player2));
+                String p=getString(R.string.our_points)+group1Points;
+                pointsTxt1.setText(p);
+                p=getString(R.string.their_points)+group2Points;
+                pointsTxt2.setText(p);
                 //todo the between round msg
                 startGame();
                 return;
             }
         }
-        playTurn();
+        handler.postDelayed(() ->playTurn(), 1350);
     }
     private void playTurn(){
         if(currentPlayer==1){
             recyclerViewPlayer1.setEnabled(true);
-            return;
         }
         else {
            recyclerViewPlayer1.setEnabled(false);
            String card=playCard(currentOrder,currentPlayer);
+            int position;
+            switch (currentPlayer){
+                case 2:
+                    position=cardListPlayer2.indexOf(card);
+                    break;
+                case 3:
+                    position=cardListPlayer3.indexOf(card);
+                    break;
+                case 4:
+                    position=cardListPlayer4.indexOf(card);
+                    break;
+                default: position=0;
+            }
            cardmanager.setCards(card,currentPlayer);
-           removeCardFromPlayer(currentPlayer,card);
-           int cardResId = getResources().getIdentifier(card, "drawable", getPackageName());
-           switch (currentPlayer) {
-               case 2:
-                   card2.setImageResource(cardResId);
-                   break;
-               case 3:
-                   card3.setImageResource(cardResId);
-                   break;
-               case 4:
-                   card4.setImageResource(cardResId);
-                   break;
-           }
+//           removeCardFromPlayer(currentPlayer,card);
+//           int cardResId = getResources().getIdentifier(card, "drawable", getPackageName());
+//           switch (currentPlayer) {
+//               case 2:
+//                   card2.setImageResource(cardResId);
+//                   break;
+//               case 3:
+//                   card3.setImageResource(cardResId);
+//                   break;
+//               case 4:
+//                   card4.setImageResource(cardResId);
+//                   break;
+//           }
             if (currentOrder==1) {
                 cardmanager.setSuit(card.substring(0, 1));
             }
+//            playCardWithAnimation2(card,position,currentPlayer);
+            handler.postDelayed(() ->playCardWithAnimation2(card,position,currentPlayer), 500);
         }
-        cardmanager.updateWinning(currentPlayer);
-        currentPlayer=(currentPlayer+1)%4;
-        if(currentPlayer==0) currentPlayer=4;
-        currentOrder++;
-        startRound();
+//        cardmanager.updateWinning(currentPlayer);
+//        currentPlayer=(currentPlayer+1)%4;
+//        if(currentPlayer==0) currentPlayer=4;
+//        currentOrder++;
+//        startRound();
     }
     private void endRound(){
         currentOrder=1;
         int winner=cardmanager.getWinning();
         currentPlayer=winner;
         cardmanager.setWinning(0);
-        if(winner==1||winner==3){
+        String points;
+        if(winner==1|winner==3){
             group1Points++;
-            pointsTxt1.setText("Our Points: "+group1Points);
+            points=getString(R.string.our_points)+ group1Points;
+            pointsTxt1.setText(points);
         }
         else{
             group2Points++;
-            pointsTxt2.setText("Their Points: "+group2Points);
+            points=getString(R.string.their_points)+ group2Points;
+            pointsTxt2.setText(points);
         }
-        for (ImageView player : new ImageView[] {card1,card2,card3,card4}) {
-            player.setImageDrawable(null);
-        }
-        cardmanager.setSuit(null);
+        handler.postDelayed(() ->cleanCardWithAnimation(new ImageView[]{card1,card2,card3,card4},winner), 500);
     }
     private void endGame(){
         int dub=(group1 > group2)?1:2;
@@ -453,23 +510,23 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     public void onBidComplete(int tr){
         switch (tr){
             case 1:
-                trumpText.setText("Trump: Hearts");
+                trumpText.setText(R.string.trump_hearts);
                 trumpSuit ="h";
                 break;
             case 2:
-                trumpText.setText("Trump: Diamonds");
+                trumpText.setText(R.string.trump_diamonds);
                 trumpSuit ="d";
                 break;
             case 3:
-                trumpText.setText("Trump: Clubs");
+                trumpText.setText(R.string.trump_clubs);
                 trumpSuit ="c";
                 break;
             case 4:
-                trumpText.setText("Trump: Spades");
+                trumpText.setText(R.string.trump_spades);
                 trumpSuit ="s";
                 break;
             default:
-                trumpText.setText("Broken");
+                trumpText.setText(R.string.broken);
                 break;
         }
     }
@@ -479,19 +536,23 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         String text = "Trump: ";
         int duration = Toast.LENGTH_SHORT;
         Toast toast;
+        String neoString;
         switch (trump){
             case 2:
-                player2Txt.setText(player2Txt.getText()+"\uD83D\uDC51");
+                neoString=player2Txt.getText()+"\uD83D\uDC51";
+                player2Txt.setText(neoString);
                 toast = Toast.makeText(this, text+"player 2", duration);
                 toast.show();
                 break;
             case 3:
-                player3Txt.setText(player3Txt.getText()+"\uD83D\uDC51");
+                neoString=player3Txt.getText()+"\uD83D\uDC51";
+                player3Txt.setText(neoString);
                 toast = Toast.makeText(this, text+"player 3", duration);
                 toast.show();
                 break;
             case 4:
-                player4Txt.setText(player4Txt.getText()+"\uD83D\uDC51");
+                neoString=player4Txt.getText()+"\uD83D\uDC51";
+                player4Txt.setText(neoString);
                 toast = Toast.makeText(this, text+"player 4", duration);
                 toast.show();
                 break;
@@ -699,6 +760,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
     }
 
     public void onItemClicked(int position) {
+        if(!recyclerViewPlayer1.isEnabled()) return;
         String card=cardListPlayer1.get(position);
         // Check conditions here before allowing the card to be played
         if (canPlayCard(card)) {
@@ -750,6 +812,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                recyclerViewPlayer1.setEnabled(false);
             }
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -760,14 +823,150 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 currentPlayer=(currentPlayer+1)%4;
                 if(currentPlayer==0) currentPlayer=4;
                 currentOrder++;
-                startRound();
+                handler.postDelayed(() ->startRound(), 500);
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
     }
+    private void playCardWithAnimation2(String card, int position,int Player) {
+        View cardView;
+        int[] startLocation = new int[2];
+        int[] endLocation = new int[2];
 
+        switch (Player){
+            case 2:
+                cardView = recyclerViewPlayer2.getLayoutManager().findViewByPosition(position);
+                cardView.getLocationOnScreen(startLocation);
+                card2.getLocationOnScreen(endLocation);
+                break;
+            case 3:
+                cardView = recyclerViewPlayer3.getLayoutManager().findViewByPosition(position);
+                cardView.getLocationOnScreen(startLocation);
+                card3.getLocationOnScreen(endLocation);
+                break;
+            case 4:
+                cardView = recyclerViewPlayer4.getLayoutManager().findViewByPosition(position);
+                cardView.getLocationOnScreen(startLocation);
+                card4.getLocationOnScreen(endLocation);
+                break;
+            default:
+                cardView=null;
+        }
+        if (cardView == null) return;
+
+        // Calculate the start and end coordinates for the animation
+
+
+        float startX = startLocation[0];
+        float startY = startLocation[1];
+        float endX = endLocation[0];
+        float endY = endLocation[1];
+
+        // Create the animation
+        TranslateAnimation animation = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+        animation.setDuration(2000);
+        animation.setFillAfter(true);
+
+
+
+        // Update the card1 ImageView after the animation
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                removeCardFromPlayer(currentPlayer,card);
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Update the card1 ImageView with the played card
+                int cardResId = getResources().getIdentifier(card, "drawable", getPackageName());
+                switch (Player){
+                    case 2:
+                        card2.setImageResource(cardResId);
+                        break;
+                    case 3:
+                        card3.setImageResource(cardResId);
+                        break;
+                    case 4:
+                        card4.setImageResource(cardResId);
+                        break;
+                }
+                cardmanager.updateWinning(currentPlayer);
+                currentPlayer=(currentPlayer+1)%4;
+                if(currentPlayer==0) currentPlayer=4;
+                currentOrder++;
+                handler.postDelayed(() ->startRound(), 500);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        cardView.startAnimation(animation);
+    }
+    private void cleanCardWithAnimation(ImageView[] cards, int winner) {
+        View cardView ;
+        int[] startLocation = new int[2];
+        int[] endLocation = new int[2];
+        if(winner==1||winner==3){
+            cardView= recyclerViewPlayer1;
+
+        }
+        else {
+            cardView= recyclerViewPlayer4;
+        }
+        if (cardView == null) return;
+
+        // Calculate the start and end coordinates for the animation
+        cardView.getLocationOnScreen(endLocation);
+        float endX = endLocation[0];
+        float endY = endLocation[1];
+
+        card1.getLocationOnScreen(startLocation);
+        float startX = startLocation[0];
+        float startY = startLocation[1];
+        TranslateAnimation animation1 = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+        card2.getLocationOnScreen(startLocation);
+        startX = startLocation[0];
+        startY = startLocation[1];
+        TranslateAnimation animation2 = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+        card3.getLocationOnScreen(startLocation);
+        startX = startLocation[0];
+        startY = startLocation[1];
+        TranslateAnimation animation3 = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+        card4.getLocationOnScreen(startLocation);
+        startX = startLocation[0];
+        startY = startLocation[1];
+        TranslateAnimation animation4 = new TranslateAnimation(0, endX - startX, 0, endY - startY);
+
+        animation1.setDuration(300);
+        animation2.setDuration(300);
+        animation3.setDuration(300);
+        animation4.setDuration(300);
+
+        // Start the animation
+        card1.startAnimation(animation1);
+        card2.startAnimation(animation2);
+        card3.startAnimation(animation3);
+        card4.startAnimation(animation4);
+
+        // Update the card1 ImageView after the animation
+        animation1.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                for (ImageView player : cards) {
+                    player.setImageDrawable(null);
+                }
+                cardmanager.setSuit(null);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+    }
 }
 
 

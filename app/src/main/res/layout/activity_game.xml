@@ -104,7 +104,7 @@
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:rotation="-90"
-        android:text="player4"
+        android:text="@string/player4"
         android:textAlignment="center"
         android:textSize="18sp"
         android:background="#000000"
@@ -118,7 +118,7 @@
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:rotation="90"
-        android:text="player2"
+        android:text="@string/player2"
         android:textAlignment="center"
         android:textSize="18sp"
         android:background="#000000"
@@ -132,7 +132,7 @@
         android:layout_width="85dp"
         android:layout_height="26dp"
         android:layout_marginTop="28dp"
-        android:text="player3"
+        android:text="@string/player3"
         android:textAlignment="center"
         android:background="#000000"
         android:textSize="18sp"
@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:text="Their Points"
+        android:text="@string/their_points"
         android:background="#000000"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -170,10 +170,33 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:background="#000000"
-        android:text="Our Points"
+        android:text="@string/our_points"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/opponent_point_holder"
+        android:layout_width="40dp"
+        android:layout_height="407dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.835"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.364" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_point_holder"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/player1_hand_recyclerview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card1"
+        app:layout_constraintVertical_bias="0.937" />
 
         <FrameLayout
         android:id="@+id/trump_caller"

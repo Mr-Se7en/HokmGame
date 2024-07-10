@@ -118,7 +118,9 @@ public class TrumpCaller extends Fragment {
 
         }
     }
-    private playercounter playerc2=new playercounter(),playerc3=new playercounter(),playerc4=new playercounter();
+    private final playercounter playerc2=new playercounter();
+    private final playercounter playerc3=new playercounter();
+    private final playercounter playerc4=new playercounter();
     private ImageView centerDeck;
     private ConstraintLayout rootLayout;
     private List<String> deck;
@@ -240,6 +242,7 @@ public class TrumpCaller extends Fragment {
     }
 
     private void animateCardDistribution(ImageView player1, ImageView player2, ImageView player3, ImageView player4) {
+        centerDeck.setClickable(false);
         distributeCardsSequentially(new ImageView[]{player1, player2, player3, player4}, 0);
     }
 
@@ -327,7 +330,8 @@ public class TrumpCaller extends Fragment {
             handler.postDelayed(() -> showTrumpSuitDialog(players,trump), 3000);
         else{
             bidder(playerc2,playerc3,playerc4,trump);
-            distributeRemainingCards(players, trump);
+//            distributeRemainingCards(players, trump);
+            handler.postDelayed(() -> distributeRemainingCards(players, trump), 3000);
         }
     }
 

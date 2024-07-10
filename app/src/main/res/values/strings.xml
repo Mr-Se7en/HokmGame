@@ -16,6 +16,20 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="play">Play</string>
+    <string name="settings">Settings</string>
+    <string name="share">Share</string>
+    <string name="game_title">HOKM</string>
+    <string name="player4">player 4</string>
+    <string name="player2">player 2</string>
+    <string name="player3">player 3</string>
+    <string name="their_points">Their Points: </string>
+    <string name="our_points">"Our Points: "</string>
+    <string name="trump_hearts">Trump: Hearts</string>
+    <string name="trump_diamonds">Trump: Diamonds</string>
+    <string name="trump_clubs">Trump: Clubs</string>
+    <string name="trump_spades">Trump: Spades</string>
+    <string name="broken">Broken</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

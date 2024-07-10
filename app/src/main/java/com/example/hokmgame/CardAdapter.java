@@ -16,8 +16,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
-    private List<String> cardList;
-    private OnItemClickListener listener;
+    private final List<String> cardList;
+    private final OnItemClickListener listener;
 
     public CardAdapter(List<String> cardList, OnItemClickListener listener) {
         this.cardList = cardList;

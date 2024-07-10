@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F2D2F"
+    android:background="#F8187825"
     tools:context=".MainActivity">
 
 
@@ -27,67 +27,73 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="#937417"
-            app:cornerRadius="10dp"
-            android:text="Play"
+            android:backgroundTint="#000080"
+            android:text="@string/play"
             android:textColor="#FFFFFF"
+            app:cornerRadius="10dp"
             app:icon="@drawable/icons8_play_50"
             app:iconTint="#FFFFFF" />
 
-        <Button
-            android:id="@+id/continueButton"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="#937417"
-            app:cornerRadius="10dp"
-            android:text="Continue"
-            android:textColor="#FFFFFF"
-            app:icon="@drawable/icons8_resume_button_50"
-            app:iconTint="#FFFFFF" />
+<!--        <Button-->
+<!--            android:id="@+id/continueButton"-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:backgroundTint="#ADFFFFFF"-->
+<!--            android:text="Continue"-->
+<!--            android:textColor="#000080"-->
+<!--            app:cornerRadius="10dp"-->
+<!--            app:icon="@drawable/icons8_resume_button_50"-->
+<!--            app:iconTint="#000080" />-->
 
         <Button
             android:id="@+id/settingsButton"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="#937417"
+            android:backgroundTint="#ADFFFFFF"
+            android:text="@string/settings"
+            android:textColor="#000080"
             app:cornerRadius="10dp"
-            android:text="Settings"
-            android:textColor="#FFFFFF"
             app:icon="@drawable/icons8_settings_200___"
-            app:iconTint="#FFFFFF" />
+            app:iconTint="#000080" />
 
         <Button
             android:id="@+id/shareButton"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#937417"
-            app:cornerRadius="10dp"
-            android:text="Share"
+            android:backgroundTint="#000080"
+            android:text="@string/share"
             android:textColor="#FFFFFF"
+            app:cornerRadius="10dp"
             app:icon="@drawable/icons8_share_50"
             app:iconTint="#FFFFFF" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="166dp"
-        android:layout_height="163dp"
-        android:visibility="visible"
+        android:layout_width="359dp"
+        android:layout_height="158dp"
+        android:contentDescription="Game's picture"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.125"
-        tools:srcCompat="@drawable/photo_2020_03_18_15_07_00" />
+        app:srcCompat="@drawable/group_22"
+        tools:srcCompat="@drawable/group_22" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="APPNAME"
+        android:fontFamily="@font/alex_brush"
+        android:text="@string/game_title"
+        android:textAlignment="center"
+        android:textAllCaps="true"
         android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
