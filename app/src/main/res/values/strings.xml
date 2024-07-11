@@ -21,8 +21,11 @@
     <string name="share">Share</string>
     <string name="game_title">HOKM</string>
     <string name="player4">player 4</string>
+    <string name="player4T">player 4 </string>
     <string name="player2">player 2</string>
+    <string name="player2T">player 2 </string>
     <string name="player3">player 3</string>
+    <string name="player3T">player 3 </string>
     <string name="their_points">Their Points: </string>
     <string name="our_points">"Our Points: "</string>
     <string name="trump_hearts">Trump: Hearts</string>

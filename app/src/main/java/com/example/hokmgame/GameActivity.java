@@ -111,37 +111,21 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         setContentView(R.layout.activity_game);
         trumpText=findViewById(R.id.trumpText);
 
-//        userPointHolder = findViewById(R.id.user_point_holder);
-//        userPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//        oppPointHolder = findViewById(R.id.opponent_point_holder);
-//        oppPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-//
-//        userPointList=new ArrayList<>();
-//        oppPointList=new ArrayList<>();
-//
-//        userPointList.add(new PointItem(1));
-//        userPointList.add(new PointItem(2));
-//        userPointList.add(new PointItem(3));
-//        userPointList.add(new PointItem(4));
-//        userPointList.add(new PointItem(5));
-//        userPointList.add(new PointItem(6));
-//        userPointList.add(new PointItem(7));
-//        userPointList.add(new PointItem(8));
-//
-//        oppPointList.add(new PointItem(1));
-//        oppPointList.add(new PointItem(2));
-//        oppPointList.add(new PointItem(3));
-//        oppPointList.add(new PointItem(4));
-//        oppPointList.add(new PointItem(5));
-//        oppPointList.add(new PointItem(6));
-//        oppPointList.add(new PointItem(7));
-//        oppPointList.add(new PointItem(8));
-//
-//        userPointAdapter = new PointHolderAdapter(userPointList,false);
-//        userPointHolder.setAdapter(userPointAdapter);
-//
-//        oppPointAdapter = new PointHolderAdapter(oppPointList,true);
-//        oppPointHolder.setAdapter(oppPointAdapter);
+        userPointHolder = findViewById(R.id.user_point_holder);
+        userPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        oppPointHolder = findViewById(R.id.opponent_point_holder);
+        oppPointHolder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        userPointList=new ArrayList<>();
+        oppPointList=new ArrayList<>();
+
+
+
+        userPointAdapter = new PointHolderAdapter(userPointList,false);
+        userPointHolder.setAdapter(userPointAdapter);
+
+        oppPointAdapter = new PointHolderAdapter(oppPointList,true);
+        oppPointHolder.setAdapter(oppPointAdapter);
 
         cardmanager=new CardManager();
 
@@ -320,7 +304,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 cardmanager.setSuit(card.substring(0, 1));
             }
 //            playCardWithAnimation2(card,position,currentPlayer);
-            handler.postDelayed(() ->playCardWithAnimation2(card,position,currentPlayer), 500);
+            handler.postDelayed(() ->playCardWithAnimation2(card,position,currentPlayer), 100);
         }
 //        cardmanager.updateWinning(currentPlayer);
 //        currentPlayer=(currentPlayer+1)%4;
@@ -536,23 +520,19 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         String text = "Trump: ";
         int duration = Toast.LENGTH_SHORT;
         Toast toast;
-        String neoString;
         switch (trump){
             case 2:
-                neoString=player2Txt.getText()+"\uD83D\uDC51";
-                player2Txt.setText(neoString);
+                player2Txt.setText(player2Txt.getText()+" ♔");
                 toast = Toast.makeText(this, text+"player 2", duration);
                 toast.show();
                 break;
             case 3:
-                neoString=player3Txt.getText()+"\uD83D\uDC51";
-                player3Txt.setText(neoString);
+                player3Txt.setText(player3Txt.getText()+" ♔");
                 toast = Toast.makeText(this, text+"player 3", duration);
                 toast.show();
                 break;
             case 4:
-                neoString=player4Txt.getText()+"\uD83D\uDC51";
-                player4Txt.setText(neoString);
+                player4Txt.setText(player4Txt.getText()+" ♔");
                 toast = Toast.makeText(this, text+"player 4", duration);
                 toast.show();
                 break;
@@ -626,6 +606,17 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
         }
         return null;
     }
+    private int cardReader(int player,boolean friend){
+        int ans;
+        if(friend){
+            ans=(player+2)%4;
+            if(ans==0) ans=4;
+        }
+        else{
+            ans=(player-1)%4;
+        }
+        return ans;
+    }
     public String playCard(int place,int player){
         switch (place){
             case 1:
@@ -649,7 +640,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 }
             case 3:
                 if(isAvailable(cardmanager.getSuit(),p2L(player))){
-                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
+                    if((RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,true)).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                         return LowestSuit(p2L(player),cardmanager.getSuit());
                     }
                     else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))) {
@@ -662,7 +653,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 }
                 else {
                     if(isAvailable(trumpSuit ,p2L(player))){
-                        if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
+                        if((RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,true)).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                             return LowestE(p2L(player));
                         }
                         else {
@@ -676,7 +667,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
 
             case 4:
                 if(isAvailable(cardmanager.getSuit(),p2L(player))){
-                    if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
+                    if((RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,true)).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))){
                         return LowestSuit(p2L(player),cardmanager.getSuit());
                     }
                     else if ((RANK_ORDER.indexOf(LargestSuit(p2L(player),cardmanager.getSuit()).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardmanager.getWinning()).substring(1)))) {
@@ -689,16 +680,16 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 }
                 else {
                     if(isAvailable(trumpSuit ,p2L(player))){
-                        if(cardmanager.getCards(((player+2)%4)+1).substring(0,1).equals(trumpSuit)){
-                            if(cardmanager.getCards(((player-1)%4)+1).substring(0,1).equals(trumpSuit)){
+                        if(cardmanager.getCards(cardReader(player,true)).substring(0,1).equals(trumpSuit)){
+                            if(cardmanager.getCards(cardReader(player,false)).substring(0,1).equals(trumpSuit)){
                                 return LowestE(p2L(player));
                             }
                             else {
-                                if((RANK_ORDER.indexOf(cardmanager.getCards(((player+2)%4)+1).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(((player-1)%4)+1)))){
+                                if((RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,true)).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,false))))){
                                     return LowestE(p2L(player));
                                 }
                                 else {
-                                    if((RANK_ORDER.indexOf(LargestSuit(p2L(player),trumpSuit).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(((player-1)%4)+1)))){
+                                    if((RANK_ORDER.indexOf(LargestSuit(p2L(player),trumpSuit).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,false))))){
                                         return LargestSuit(p2L(player),trumpSuit);
                                     }
                                     else {
@@ -708,8 +699,8 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                             }
                         }
                         else{
-                            if(cardmanager.getCards(((player-1)%4)+1).substring(0,1).equals(trumpSuit)){
-                                if((RANK_ORDER.indexOf(LargestSuit(p2L(player),trumpSuit).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(((player-1)%4)+1)))){
+                            if(cardmanager.getCards(cardReader(player,false)).substring(0,1).equals(trumpSuit)){
+                                if((RANK_ORDER.indexOf(LargestSuit(p2L(player),trumpSuit).substring(1)) <RANK_ORDER.indexOf(cardmanager.getCards(cardReader(player,false))))){
                                     return LargestSuit(p2L(player),trumpSuit);
                                 }
                                 else {
@@ -896,7 +887,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                 currentPlayer=(currentPlayer+1)%4;
                 if(currentPlayer==0) currentPlayer=4;
                 currentOrder++;
-                handler.postDelayed(() ->startRound(), 500);
+                handler.postDelayed(() ->startRound(), 100);
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -961,6 +952,23 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
                     player.setImageDrawable(null);
                 }
                 cardmanager.setSuit(null);
+                if(winner==1||winner==3){
+                    userPointList.add(new PointItem(0));
+                    userPointAdapter.notifyDataSetChanged();
+
+                }
+                else {
+                    oppPointList.add(new PointItem(0));
+                    oppPointAdapter.notifyDataSetChanged();
+
+                }
+                if(userPointList.size()>=7||oppPointList.size()>=7){
+                    userPointList.clear();
+                    userPointAdapter.notifyDataSetChanged();
+                    oppPointList.clear();
+                    oppPointAdapter.notifyDataSetChanged();
+                }
+
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
