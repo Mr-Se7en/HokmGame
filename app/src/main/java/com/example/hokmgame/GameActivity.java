@@ -804,6 +804,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
             @Override
             public void onAnimationStart(Animation animation) {
                 recyclerViewPlayer1.setEnabled(false);
+                SoundManager.playSound(GameActivity.this,R.raw.fh);
             }
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -867,6 +868,7 @@ public class GameActivity extends AppCompatActivity implements TrumpCaller.OnCar
             @Override
             public void onAnimationStart(Animation animation) {
                 removeCardFromPlayer(currentPlayer,card);
+                SoundManager.playSound(GameActivity.this,R.raw.fh);
             }
             @Override
             public void onAnimationEnd(Animation animation) {

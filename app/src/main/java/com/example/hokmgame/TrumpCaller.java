@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -307,13 +308,21 @@ public class TrumpCaller extends Fragment {
         // Add listener to remove the temporary card and start the next animation
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                // Play sound using SoundManager
+             SoundManager.playSound(getContext(), R.raw.fh);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
+                // Remove the temporary card view from the root layout
                 rootLayout.removeView(tempCard);
+                // Notify listener that the animation has ended
                 listener.onAnimationEnd(animation);
+//                SoundManager.playSound(getContext(), R.raw.fh);
             }
         });
     }
-
     private void startDistributionFromTrumpPlayer(ImageView[] players) {
         // Remove the ImageView objects as needed (e.g., player1, player2, etc.)
         for (ImageView player : players) {
@@ -358,7 +367,9 @@ public class TrumpCaller extends Fragment {
                     // Do something with the selected suit
                     distributeRemainingCards(players, trump);
                 });
-        builder.create().show();
+        AlertDialog dlg= builder.create();
+        dlg.setCancelable(false);
+        dlg.show();
     }
 
     private void distributeRemainingCards(ImageView[] players, int trump) {
