@@ -23,23 +23,23 @@
         android:id="@+id/player3_hand_recyclerview"
         android:layout_width="0dp"
         android:layout_height="130dp"
-        android:layout_marginBottom="690dp"
         android:orientation="horizontal"
         android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/player1_hand_recyclerview"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/player2_hand_recyclerview"
         android:layout_width="130dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="350dp"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/player1_hand_recyclerview"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -47,11 +47,11 @@
         android:id="@+id/player4_hand_recyclerview"
         android:layout_width="130dp"
         android:layout_height="0dp"
-        android:layout_marginStart="350dp"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/player1_hand_recyclerview"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -59,55 +59,56 @@
         android:id="@+id/card2"
         android:layout_width="105dp"
         android:layout_height="152dp"
-        android:layout_marginStart="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.471"
-        tools:srcCompat="@drawable/posht" />
-
-    <ImageView
-        android:id="@+id/card3"
-        android:layout_width="105dp"
-        android:layout_height="152dp"
-        android:layout_marginTop="172dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/card1"
+        app:layout_constraintEnd_toStartOf="@+id/mockView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/player_txt2"
+        app:layout_constraintTop_toTopOf="@+id/card3"
+        app:layout_constraintVertical_bias="0.49"
         tools:srcCompat="@drawable/posht" />
 
     <ImageView
         android:id="@+id/card1"
         android:layout_width="105dp"
         android:layout_height="152dp"
-        android:layout_marginBottom="236dp"
-        app:layout_constraintBottom_toBottomOf="@+id/player1_hand_recyclerview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/user_point_holder"
+        app:layout_constraintEnd_toStartOf="@+id/player_txt4"
+        app:layout_constraintStart_toEndOf="@+id/player_txt2"
+        app:layout_constraintTop_toBottomOf="@+id/mockView"
+        tools:srcCompat="@drawable/posht" />
+
+    <ImageView
+        android:id="@+id/card3"
+        android:layout_width="105dp"
+        android:layout_height="152dp"
+        app:layout_constraintBottom_toTopOf="@+id/card1"
+        app:layout_constraintEnd_toStartOf="@+id/player_txt4"
+        app:layout_constraintStart_toEndOf="@+id/player_txt2"
+        app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview"
+        app:layout_constraintVertical_bias="1.0"
         tools:srcCompat="@drawable/posht" />
 
     <ImageView
         android:id="@+id/card4"
         android:layout_width="105dp"
         android:layout_height="152dp"
-        android:layout_marginEnd="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/card1"
+        app:layout_constraintEnd_toStartOf="@+id/player_txt4"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/card2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.471"
+        app:layout_constraintTop_toTopOf="@+id/card3"
         tools:srcCompat="@drawable/posht" />
 
     <TextView
         android:id="@+id/player_txt4"
         android:layout_width="85dp"
         android:layout_height="26dp"
+        android:background="#000000"
         android:rotation="-90"
         android:text="@string/player4"
         android:textAlignment="center"
+        android:textColor="#757575"
         android:textSize="18sp"
-        android:background="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -117,11 +118,12 @@
         android:id="@+id/player_txt2"
         android:layout_width="85dp"
         android:layout_height="26dp"
+        android:background="#000000"
         android:rotation="90"
         android:text="@string/player2"
         android:textAlignment="center"
+        android:textColor="#757575"
         android:textSize="18sp"
-        android:background="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -131,61 +133,64 @@
         android:id="@+id/player_txt3"
         android:layout_width="85dp"
         android:layout_height="26dp"
-        android:layout_marginTop="28dp"
+        android:background="#000000"
         android:text="@string/player3"
         android:textAlignment="center"
-        android:background="#000000"
+        android:textColor="#757575"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview" />
 
     <TextView
         android:id="@+id/trumpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
         android:background="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/player_txt3" />
 
     <TextView
         android:id="@+id/opponent_points"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/their_points"
         android:background="#000000"
+        android:text="@string/their_points"
+        android:textColor="#757575"
         android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/opponent_point_holder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.89"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.76" />
 
     <TextView
         android:id="@+id/user_points"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
         android:background="#000000"
         android:text="@string/our_points"
+        android:textColor="#757575"
         android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/player2_hand_recyclerview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.11"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.76" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/opponent_point_holder"
         android:layout_width="40dp"
         android:layout_height="407dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.835"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.364" />
+        app:layout_constraintBottom_toTopOf="@+id/player1_hand_recyclerview"
+        app:layout_constraintEnd_toStartOf="@+id/player4_hand_recyclerview"
+        app:layout_constraintTop_toBottomOf="@+id/player3_hand_recyclerview"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_point_holder"
@@ -193,12 +198,20 @@
         android:layout_height="40dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/player1_hand_recyclerview"
+        app:layout_constraintEnd_toEndOf="@+id/player1_hand_recyclerview"
+        app:layout_constraintStart_toStartOf="@+id/player1_hand_recyclerview" />
+
+    <androidx.constraintlayout.utils.widget.MockView
+        android:id="@+id/mockView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card1"
-        app:layout_constraintVertical_bias="0.937" />
-
-        <FrameLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.38" />
+    <FrameLayout
         android:id="@+id/trump_caller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
